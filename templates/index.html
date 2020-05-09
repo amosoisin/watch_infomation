@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="cpu-percent-per-core">
+    <p>コアごとのCPU使用率</p>
+    <div class="epoch"></div>
+</div>
+<div id="cpu-percent">
+    <p>CPU使用率</p>
+    <div class="epoch"></div>
+</div>
+<div id="memory-used">
+    <p>メモリ使用量</p>
+    <div class="epoch"></div>
+</div>
+<div id="memory-free">
+    <p>メモリ空き容量</p>
+    <div class=epoch></div>
+</div>
+<div id="memory-percent">
+    <p>メモリ使用率</p>
+    <div class=epoch></div>
+</div>
+<div id="disk-used">
+    <p>ディスク使用量</p>
+    <div class="epoch"></div>
+</div>
+<div id="disk-free">
+    <p>ディスク空き容量</p>
+    <div class=epoch></div>
+</div>
+<div id="disk-percent">
+    <p>ディスク使用率</p>
+    <div class=epoch></div>
+</div>
+
+<div id="cpu-temp">
+    <p>CPU温度</p>
+    <div class=epoch></div>
+</div>
+
+<script>
+$(function(){
+    // about cpu_percent_per_core
+    var cpu_percent_per_core_data = [
+        {label: 'コア1', values: []},
+        {label: 'コア2', values: []},
+        {label: 'コア3', values: []},
+        {label: 'コア4', values: []},
+    ]
+
+    var cpu_percent_per_core_chart = $('#cpu-percent-per-core .epoch').epoch({
+        type: 'time.line',
+        data: cpu_percent_per_core_data,
+        axes: ['left', 'bottom']
+    });
+
+
+    // about cpu_percent
+    var cpu_percent_data = [
+        {label: '使用率', values: []},
+    ]
+    
+    var cpu_percent_chart = $('#cpu-percent .epoch').epoch({
+        type: 'time.line',
+        data: cpu_percent_data,
+        axes: ['left', 'bottom']
+    })
+
+    
+    // about memory used
+    var memory_used_data = [
+        {label: '使用量', values: []},
+    ]
+
+    var memory_used_chart = $('#memory-used .epoch').epoch({
+        type: 'time.line',
+        data: memory_used_data,
+        axes: ['left', 'bottom']
+    })
+
+
+    // about memory free
+    var memory_free_data = [
+        {label: '利用可能', values: []},
+    ]
+
+    var memory_free_chart = $('#memory-free .epoch').epoch({
+        type: 'time.line',
+        data: memory_free_data,
+        axes: ['left', 'bottom']
+    })
+
+
+    // about memory percent
+    var memory_percent_data = [
+        {label: '使用率', values: []},
+    ]
+
+    var memory_percent_chart = $('#memory-percent .epoch').epoch({
+        type: 'time.line',
+        data: memory_percent_data,
+        axes: ['left', 'bottom']
+    })
+
+     
+    // about disk used
+    var disk_used_data = [
+        {label: '使用量', values: []},
+    ]
+
+    var disk_used_chart = $('#disk-used .epoch').epoch({
+        type: 'time.line',
+        data: disk_used_data,
+        axes: ['left', 'bottom']
+    })
+
+
+    // about disk free
+    var disk_free_data = [
+        {label: '利用可能', values: []},
+    ]
+
+    var disk_free_chart = $('#disk-free .epoch').epoch({
+        type: 'time.line',
+        data: disk_free_data,
+        axes: ['left', 'bottom']
+    })
+
+
+    // about disk percent
+    var disk_percent_data = [
+        {label: '使用率', values: []},
+    ]
+
+    var disk_percent_chart = $('#disk-percent .epoch').epoch({
+        type: 'time.line',
+        data: disk_percent_data,
+        axes: ['left', 'bottom']
+    })
+
+
+    // about cpu-temp
+    var cpu_temp_data = [
+        {label: '温度', values: []},
+    ]
+
+    var cpu_temp_chart = $('#cpu-temp .epoch').epoch({
+        type: "time.line",
+        data: cpu_temp_data,
+        axes: ['left', 'bottom']
+    })
+
+    var ws = new WebSocket("ws://192.168.0.103:8000/publish");
+    ws.onmessage = function(msg){
+        var current = JSON.parse(msg.data);
+        console.log(current.slice(0, 4));
+        cpu_percent_per_core_chart.push(current.slice(0, 4));
+        cpu_percent_chart.push(current.slice(4, 5));
+        memory_used_chart.push(current.slice(5));
+        memory_free_chart.push(current.slice(6));
+        memory_percent_chart.push(current.slice(7));
+        disk_used_chart.push(current.slice(8));
+        disk_free_chart.push(current.slice(9));
+        disk_percent_chart.push(current.slice(10));
+        cpu_temp_chart.push(current.slice(11));
+    };
+})
+</script>
+{% endblock %}
